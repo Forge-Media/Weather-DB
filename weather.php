@@ -46,7 +46,7 @@ $integrity = '0';
 print_r($apiis->getIsWeather($stations, $time, $integrity));
 
 //Extract weather data
-/* try {
+ try {
 
 
     //Check to see if a list of cities exists
@@ -71,5 +71,6 @@ print_r($apiis->getIsWeather($stations, $time, $integrity));
     echo 'OpenWeatherMap exception: ' . $e->getMessage() . ' (Code ' . $e->getCode() . ').';
 } catch(\Exception $e) {
     echo 'General exception: ' . $e->getMessage() . ' (Code ' . $e->getCode() . ').';
-} */
+}
 
+print_r($weather);
