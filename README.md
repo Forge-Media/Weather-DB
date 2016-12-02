@@ -1,30 +1,28 @@
+ __    __           _   _                     ___  ___ 
+/ / /\ \ \___  __ _| |_| |__   ___ _ __      /   \/ __\
+\ \/  \/ / _ \/ _` | __| '_ \ / _ \ '__|    / /\ /__\//
+ \  /\  /  __/ (_| | |_| | | |  __/ |      / /_// \/  \
+  \/  \/ \___|\__,_|\__|_| |_|\___|_|     /___,'\_____/
+                                                       
 
-     ,-----.,--.                  ,--. ,---.   ,--.,------.  ,------.
-    '  .--./|  | ,---. ,--.,--. ,-|  || o   \  |  ||  .-.  \ |  .---'
-    |  |    |  || .-. ||  ||  |' .-. |`..'  |  |  ||  |  \  :|  `--, 
-    '  '--'\|  |' '-' ''  ''  '\ `-' | .'  /   |  ||  '--'  /|  `---.
-     `-----'`--' `---'  `----'  `---'  `--'    `--'`-------' `------'
-    ----------------------------------------------------------------- 
+Copyright (c) Jeremy Paton 2016
 
+A simple weather aggregation script written in PHP which stores data from multiple API sources including:
+- [APIS](http://docs.apis.is/)
+- [Open Weather Map](http://openweathermap.org/weathermap/)
 
-Hi there! Welcome to Cloud9 IDE!
+Master branch is currently in development!
 
-To get you started, we have created a small hello world application.
-
-1) Open the hello-world.php file
-
-2) Follow the run instructions in the file's comments
-
-3) If you want to look at the Apache logs, check out ~/lib/apache2/log
-
-And that's all there is to it! Just have fun. Go ahead and edit the code, 
-or add new files. It's all up to you! 
-
-Happy coding!
-The Cloud9 IDE team
+Requires:
+-----------------
+- Based on the [OpenWeatherMap-PHP-Api](https://github.com/cmfcmf/OpenWeatherMap-PHP-Api)
 
 
-## Support & Documentation
+Dev quick deploy:
+-----------------
+Coming Soon1
 
-Visit http://docs.c9.io for support, or to learn more about using Cloud9 IDE. 
-To watch some training videos, visit http://www.youtube.com/user/c9ide
+Change Log - v0.1
+-------------------
+
+[Older changes](CHANGELOG.md)

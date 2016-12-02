@@ -1,0 +1,11 @@
+bower_components/
+vendor/
+node_modules/
+web/vendor/
+
+composer.phar
+php.ini
+
+config.php
+
+.DS_Store
