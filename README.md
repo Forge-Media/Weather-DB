@@ -1,10 +1,3 @@
- __    __           _   _                     ___  ___ 
-/ / /\ \ \___  __ _| |_| |__   ___ _ __      /   \/ __\
-\ \/  \/ / _ \/ _` | __| '_ \ / _ \ '__|    / /\ /__\//
- \  /\  /  __/ (_| | |_| | | |  __/ |      / /_// \/  \
-  \/  \/ \___|\__,_|\__|_| |_|\___|_|     /___,'\_____/
-                                                       
-
 Copyright (c) Jeremy Paton 2016
 
 A simple weather aggregation script written in PHP which stores data from multiple API sources including:
