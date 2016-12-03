@@ -19,6 +19,7 @@ use forgemedia\apiis\CurrentIsWeather;
 use Cmfcmf\OpenWeatherMap\Fetcher\CurlFetcher;
 use Cmfcmf\OpenWeatherMap\Fetcher\FetcherInterface;
 use Cmfcmf\OpenWeatherMap\Fetcher\FileGetContentsFetcher;
+use Cmfcmf\OpenWeatherMap\Exception as OWMException;
 
 
 /**
@@ -85,15 +86,11 @@ class apiis
             $integrity = '0';
         }
         
-        print_r('StationID: '.$stations.' Time: '.$time.' Integrity: '.$integrity);
-        
         $answer = $this->getRawIsWeatherData($stations, $time, $integrity);
         
-        //$xml = $this->parseXML($answer);
-        //return new CurrentIsWeather($xml, $units);
+        $json = $this->parseJson($answer);
         
-        return $answer;
-        
+        return $json;
     }
     
     /**
@@ -156,7 +153,22 @@ class apiis
                 throw new \InvalidArgumentException('Error: $stations has the wrong format. See the documentation of http://docs.apis.is/ to read about valid formats.');
         }
     }
+    
+    /**
+     * @param string $answer The content returned by API.is.
+     *
+     * @return \stdClass
+     * @throws OWMException If the content isn't valid JSON.
+     */
+    private function parseJson($answer)
+    {
+        $json = json_decode($answer);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new OWMException('OpenWeatherMap returned an invalid json object: ' . json_last_error_msg());
+        }
 
+        return $json;
+    }
 }
 
 ?>

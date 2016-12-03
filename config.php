@@ -16,4 +16,7 @@ $configs = array(
         "hveragerdi,is",
         "selfoss,is"
     ),
+    'apiis' => array(
+        array('sid' => "1487", 'lat' => "63.9831", 'lon' => "-21.6497")
+    ),
 );

@@ -1,4 +1,10 @@
 {
+    "repositories": [
+        {
+            "url": "https://github.com/indieteq/indieteq-php-my-sql-pdo-database-class.git",
+            "type": "git"
+        }
+    ],
     "require": {
         "cmfcmf/openweathermap-php-api": "^2.1"
     }

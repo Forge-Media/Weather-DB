@@ -1,0 +1,14 @@
+{
+  "name": "indieteq-php-my-sql-pdo-database-class",
+  "homepage": "https://github.com/indieteq/indieteq-php-my-sql-pdo-database-class",
+  "_release": "df05c95ef5",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "df05c95ef5889f2de268939038b165d8420dc25c"
+  },
+  "_source": "https://github.com/indieteq/indieteq-php-my-sql-pdo-database-class.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/indieteq/indieteq-php-my-sql-pdo-database-class.git",
+  "_direct": true
+}
