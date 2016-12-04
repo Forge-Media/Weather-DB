@@ -11,6 +11,7 @@ A simple weather aggregate script written in PHP which stores data from multiple
 
 Requires:
 - OpenWeatherMap PHP API
+- indieteq-php-my-sql-pdo-database-class
 */
 
 use forgemedia\apiis;
@@ -38,7 +39,7 @@ $units = 'metric';
 $integrity = '0';
 
 // 1h or 3h API.is weather data.
-$time = '1h';
+$time = '3h';
 
 /*-------Weather Objects-------*/
 
@@ -52,13 +53,19 @@ $apiis = new apiis();
 // Create database object 
 $db = new Db();
 
-//Extract weather data
+/**
+ * Core statment which runs owmWeather and apiisWeather functions
+ *
+ * @throws OWMException errors
+ *
+*/
 try {
     
-    //owmWeather($owm, $configs, $lang, $units);
+    //Get weather from Open Weather Map
+    owmWeather($owm, $db, $configs, $lang, $units);
     
-    $isweather = apiisWeather($apiis, $configs, $time, $integrity);
-    //print_r($isweather);
+    //Get weather from Iceland Met Office via API.is
+    apiisWeather($apiis, $db, $configs, $time, $integrity);
     
 } catch(OWMException $e) {
     echo 'OpenWeatherMap exception: ' . $e->getMessage() . ' (Code ' . $e->getCode() . ').';
@@ -68,32 +75,69 @@ try {
 
 /*-------Functions-------*/
 
-//Get OpenWeatherMap Data
-function owmWeather($owmF, $configsF, $langF, $unitsF) {
+/**
+ * Function which queries the OpenWeatherMap weather data API (openweathermap.org)
+ *
+ * @param object        $owmF The OpenWeatherMap object needs to be passed as a parameter.
+ * @param object        $dbF The database object needs to be passed as a parameter.
+ * @param array         $configsF A configuration array set in config.php
+ * @param string        $langF      en = English
+ * @param string        $unitsF     metric
+ *
+ * Warning: Minimal error checking.
+ *
+*/
+function owmWeather($owmF, $dbF, $configsF, $langF, $unitsF) {
     
     //Check to see if a list of cities exists
     if (!empty($configsF['owmcities'])) {
         
-        //Loop through array to create each channel
+        //Loop through array for each station
         foreach ($configsF['owmcities'] as $key => $value) {
-        
-            //Get Weather data and add to array
-            $weather[$key] = array(
-                //$value => $owmF->getWeather($value, $unitsF, $langF)
-            );
             
-            //print_r($weather);
+            //Get weather data for station
+            $weatherobj = $owmF->getWeather($value, $unitsF, $langF);
+            
+            //Add weather data to array
+            $weather = array(
+                "time" => $weatherobj->lastUpdate->format('Y/m/d h:i:s'),
+                "name" => $weatherobj->city->name,
+                "lat" => $weatherobj->city->lat,
+                "lon" => $weatherobj->city->lon,
+                "temperature" => $weatherobj->temperature->getValue(),
+                "description" => strtolower($weatherobj->weather->description),
+                "clouds" => $weatherobj->clouds->getValue(),
+                "winddirection" => $weatherobj->wind->direction->getUnit(),
+                "windspeed" => $weatherobj->wind->speed->getValue(),
+                "pressure" => $weatherobj->pressure->getValue(),
+                "humidity" => $weatherobj->humidity->getValue()
+            );
+
+        //Send weather data to database
+        SetWeather($weather, $dbF); 
         }
     } else {
         
         //Config Error
         echo 'No cities have been listed in the configs file';
     }    
-    
 }
 
-//Get API.is Data
-function apiisWeather($apiisF, $configsF, $timeF, $integrityF) {
+/**
+ * Function which queries the Iceland Met Office weather data via the Icelandic API (apis.is)
+ *
+ * @param object        $apiisF The (apis.is) object needs to be passed as a parameter.
+ * @param object        $dbF The database object needs to be passed as a parameter.
+ * @param array         $configsF A configuration array set in config.php
+ * @param string        $timeF          1h = Fetch data from automatic weather stations that are updated on the hour.
+ *                                      3h = Only fetch mixed data from manned and automatic weather stations that is updated every 3 hours.
+ * @param string        $integrityF     0 = an error will be returned if current data is not available.
+ *                                      1 = last available numbers will be displayed, regardless of date.
+ *
+ * Warning: Minimal error checking.
+ *
+*/
+function apiisWeather($apiisF, $dbF, $configsF, $timeF, $integrityF) {
     
     //Check to see if a list of cities exists
     if (!empty($configsF['apiis'])) {
@@ -104,21 +148,28 @@ function apiisWeather($apiisF, $configsF, $timeF, $integrityF) {
             //Get Station ID
             $stationID = $value['sid'];
             
-            //Get Weather data
+            //Get weather data for station
             $weatherobj = $apiisF->getIsWeather($stationID, $timeF, $integrityF);
- 
-            //Add weather data object to array
+            $weatherobj = $weatherobj->results['0'];
+
+            //Add weather data to array
             $weather = array(
-                "time" =>
-                $weatherobj->results['0']
+                "time" => $weatherobj->time,
+                "name" => $weatherobj->name,
+                "lat" => $value['lat'],
+                "lon" => $value['lon'],
+                "temperature" => $weatherobj->T,
+                "description" => strtolower($weatherobj->W),
+                "clouds" => $weatherobj->N,
+                "winddirection" => $weatherobj->D,
+                "windspeed" => $weatherobj->F,
+                "pressure" => $weatherobj->P,
+                "humidity" => $weatherobj->RH
             );
-            
-            
-            
+   
+        //Send weather data to database
+        SetWeather($weather, $dbF); 
         }
-        
-        return $weather;
-        
     } else {
         
         //Config Error
@@ -127,13 +178,44 @@ function apiisWeather($apiisF, $configsF, $timeF, $integrityF) {
     
 }
 
-//Basic database input
+/**
+ * Populates a SQL Database with weather data passed as an array.
+ *
+ * @param   array       $weatherF Array containing the filtered weather data.
+ * @param   object      $dbF The database object needs to be passed as a parameter.
+ *
+ *
+*/
 function SetWeather($weatherF, $dbF) {
     
-// Insert
-    $insert = $db->query(
-        "INSERT INTO `weather`(`id`, `time`, `name`, `lat`, `lon`, `temperature`, `description`, `clouds`, `winddirection`, `windspeed`, `pressure`, `humidity`) VALUES (:time,:name,:lat,:lon,:temperature,:description,:clouds,:winddirection,:windspeed,:pressure,:humidity)", 
-        array("f"=>"Vivek","age"=>"20")
+    // Insert weather data SQL query
+    $insert = $dbF->query(
+        "INSERT INTO `weather`(`time`, `name`, `lat`, `lon`, `temperature`, `description`, `clouds`, `winddirection`, `windspeed`, `pressure`, `humidity`) VALUES (:time,:name,:lat,:lon,:temperature,:description,:clouds,:winddirection,:windspeed,:pressure,:humidity)", 
+        $weatherF
         );
+    
+    // Echo success
+    if($insert > 0 ) {
+        echo 'Succesfully added: '.$weatherF['name'].' to the database!'.'<br/>';
+    } else {
+        echo 'Error adding: '.$weatherF['name'].' to the database!'.'<br/>';
+    }
+}
+
+/**
+ * Returns the description of wind direction when given an angle in degrees.
+ *
+ * @param   int         $degF The angle in degrees to convert
+ *
+ * @return  string      Returns the string based description of the angle.
+ *
+ *
+*/
+function degConverter ($degF) {
+
+    $val = floor(($degF / 22.5) + 0.5);
+    $arr = array("N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW");
+    $index = ($val % 16);
+    return $arr[$index];
 
 }

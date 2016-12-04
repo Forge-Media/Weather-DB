@@ -8,14 +8,10 @@ Master branch is currently in development!
 
 Requires:
 -----------------
-- Based on the [OpenWeatherMap-PHP-Api](https://github.com/cmfcmf/OpenWeatherMap-PHP-Api)
+- [OpenWeatherMap-PHP-Api](https://github.com/cmfcmf/OpenWeatherMap-PHP-Api)
+- [indieteq-php-my-sql-pdo-database-class](https://github.com/indieteq/indieteq-php-my-sql-pdo-database-class)
 
-
-Dev quick deploy:
------------------
-Coming Soon1
-
-Change Log - v0.1
+Change Log - v0.8
 -------------------
 
 [Older changes](CHANGELOG.md)

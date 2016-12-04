@@ -79,10 +79,10 @@ class apiis
     public function getIsWeather($stations, $time, $integrity)
     {
         //Defaults
-        if (!empty($time)){
+        if (empty($time)){
             $time = '1h';
         }
-        if (!empty($integrity)){
+        if (empty($integrity)){
             $integrity = '0';
         }
         
