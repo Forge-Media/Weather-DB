@@ -127,7 +127,7 @@ function owmWeather($owmF, $dbF, $configsF, $langF, $unitsF) {
             );
 
         //Send weather data to database
-        //SetWeather($weather, $dbF); 
+        SetWeather($weather, $dbF); 
         }
     } else {
         
@@ -181,7 +181,7 @@ function apiisWeather($apiisF, $dbF, $configsF, $timeF, $integrityF) {
             );
    
         //Send weather data to database
-        //SetWeather($weather, $dbF); 
+        SetWeather($weather, $dbF); 
         }
     } else {
         
