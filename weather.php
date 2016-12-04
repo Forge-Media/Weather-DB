@@ -61,11 +61,24 @@ $db = new Db();
 */
 try {
     
-    //Get weather from Open Weather Map
-    owmWeather($owm, $db, $configs, $lang, $units);
+    $current_time = date('H:i a');
+    $sunrise = "10:00 am";
+    $sunset = "4:00 pm";
+    $date1 = DateTime::createFromFormat('H:i a', $current_time);
+    $date2 = DateTime::createFromFormat('H:i a', $sunrise);
+    $date3 = DateTime::createFromFormat('H:i a', $sunset);
+    if ($date1 > $date2 && $date1 < $date3)
+    {
+        echo 'The time is: '.date('H:i a').' As it is DAY in Iceland no weather records are being kept </br>';
+    } else {
+        echo 'The time is: '.date('H:i a').' As it is NIGHT in Iceland weather records are being stored every hour </br>';
+        
+        //Get weather from Open Weather Map
+        owmWeather($owm, $db, $configs, $lang, $units);
     
-    //Get weather from Iceland Met Office via API.is
-    apiisWeather($apiis, $db, $configs, $time, $integrity);
+        //Get weather from Iceland Met Office via API.is
+        apiisWeather($apiis, $db, $configs, $time, $integrity);  
+    }
     
 } catch(OWMException $e) {
     echo 'OpenWeatherMap exception: ' . $e->getMessage() . ' (Code ' . $e->getCode() . ').';
@@ -114,7 +127,7 @@ function owmWeather($owmF, $dbF, $configsF, $langF, $unitsF) {
             );
 
         //Send weather data to database
-        SetWeather($weather, $dbF); 
+        //SetWeather($weather, $dbF); 
         }
     } else {
         
@@ -168,7 +181,7 @@ function apiisWeather($apiisF, $dbF, $configsF, $timeF, $integrityF) {
             );
    
         //Send weather data to database
-        SetWeather($weather, $dbF); 
+        //SetWeather($weather, $dbF); 
         }
     } else {
         
